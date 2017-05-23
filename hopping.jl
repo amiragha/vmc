@@ -1,10 +1,4 @@
 # NOTE: for now only works with periodic
-type Model
-    lattice :: Lattice1D
-    onesite :: Vector{Float64}
-    twosite :: Vector{Complex128}
-end
-
 function solve_hopping(model::Model)
 
     sites = model.lattice.unitcell.sites
@@ -21,19 +15,21 @@ function solve_hopping(model::Model)
     for kidx=0:L-1
         ft_Hamiltonian = zeros(Complex128, n_sites, n_sites)
         for i=1:n_sites
-            ft_Hamiltonian[i,i] = model.onesite[sites[i].brand]
+            mui = model.amplitudes_1site[sites[i].brand]
+            ft_Hamiltonian[i,i] = mui
         end
 
         for idx=1:length(edges)
-            amplitude = model.twosite[edges[idx].brand]
+            t = model.amplitudes_2site[edges[idx].brand]
             offset = edges[idx].offset
             if offset != 0
-                amplitude *= exp(-im * (2*pi*kidx/L) * edges[idx].offset)
+                t *= exp(-im * (2*pi*kidx/L) * edges[idx].offset)
             end
             i = edges[idx].site2.id
             j = edges[idx].site1.id
-            ft_Hamiltonian[i,j] += amplitude
-            ft_Hamiltonian[j,i] += conj(amplitude)
+
+            ft_Hamiltonian[i,j] += t
+            ft_Hamiltonian[j,i] += conj(t)
         end
 
         println(ft_Hamiltonian)
@@ -43,4 +39,22 @@ function solve_hopping(model::Model)
     end
 
     return energies, eigenstates
+end
+
+function meanfield_states(model::Model, N_occupied)
+    energies, eigenstates = solve_hopping(model)
+    println(energies)
+
+    states = zeros(Complex128,
+                   length(model.lattice.unitcell.sites),
+                   model.size,
+                   N_occupied)
+
+    # sort energies, fill states with eigenvectors of lowest eigenvalues
+    for index = sortperm(reshape(energies, length(energies)))[1:N_occupied]
+        i, j = ind2sub(energies, index)
+        k_state = transpose([exp(im*2*pi*k*x/L) for x=1:model.size])
+        states[:, :, index] = kron(eigenvalues[:, i, j], kstate)
+    end
+    return states
 end

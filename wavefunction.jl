@@ -1,13 +1,12 @@
 planewave(L, k, x) = exp(im*k*x)/sqrt(L)
 
-# need a better representation!
 spin_isup(x) = x == 1
 spin_isdn(x) = x == 0
 
 type WaveFunction
 
     L :: Int
-    ks :: Vector{Float64}
+    states :: Matrix{Complex128}
 
     configuration :: Vector{Int}
 

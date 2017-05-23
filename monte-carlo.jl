@@ -12,3 +12,12 @@ function move!(wf::WaveFunction)
         return false
     end
 end
+
+function runVMC(model::Model)
+    # NOTE: assuming total number of sites are even
+    N_occupied =
+        div(model.size * length(model.lattice.unitcell.sites), 2)
+
+    states = meanfield_states(model, N_occupied)
+
+end

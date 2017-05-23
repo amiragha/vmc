@@ -1,28 +1,30 @@
 include("lattice.jl")
+include("model.jl")
 include("hopping.jl")
+include("wavefunction.jl")
+include("monte-carlo.jl")
 
 function make_periodic_chain_model(L::Int)
     sites = [
-        Site(1, 1)
+        Site(1, :s1)
     ]
 
     edges = [
-        Edge1D(1, 1, sites[1], sites[1], 1)
+        Edge1D(1, :e1, sites[1], sites[1], 1)
     ]
 
     unitcell  = UnitCell1D(sites, edges)
     lattice = Lattice1D(unitcell, L, :periodic)
 
-    onesite_interaction_brands = [0]
-    twosite_interaction_brands = [-1] .* (1+0im)
+    amplitudes_1site = Dict(:s1 => 0)
+    amplitudes_2site = Dict(:e1 => complex(1))
 
-    return Model(lattice,
-                 onesite_interaction_brands,
-                 twosite_interaction_brands)
+    modelname = "chain"
+    return Model(modelname,
+                 lattice,
+                 amplitudes_1site,
+                 amplitudes_2site)
 end
 
 model = make_periodic_chain_model(6)
-
-energies, eigenstates = solve_hopping(model)
-println(energies)
-println(eigenstates)
+runVMC(model)
