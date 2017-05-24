@@ -1,3 +1,5 @@
+planewave(L, k, x) = exp(im*k*x)/sqrt(L)
+
 # NOTE: for now only works with periodic
 function solve_hopping(model::Model)
 
@@ -32,7 +34,7 @@ function solve_hopping(model::Model)
             ft_Hamiltonian[j,i] += conj(t)
         end
 
-        println(ft_Hamiltonian)
+        println("ft_Hamiltonian", ft_Hamiltonian)
         eigenresult = eigfact(Hermitian(ft_Hamiltonian))
         energies[:,kidx+1] = eigenresult[:values]
         eigenstates[:,:,kidx+1] = eigenresult[:vectors]
@@ -41,20 +43,23 @@ function solve_hopping(model::Model)
     return energies, eigenstates
 end
 
-function meanfield_states(model::Model, N_occupied)
+# return states : space volume x N_occupied
+# the space part is column first
+function meanfield_states(model::Model, N_occupied::Int)
     energies, eigenstates = solve_hopping(model)
     println(energies)
 
+    L = model.lattice.size
     states = zeros(Complex128,
-                   length(model.lattice.unitcell.sites),
-                   model.size,
-                   N_occupied)
+                   length(model.lattice.unitcell.sites) * L, N_occupied)
 
     # sort energies, fill states with eigenvectors of lowest eigenvalues
-    for index = sortperm(reshape(energies, length(energies)))[1:N_occupied]
-        i, j = ind2sub(energies, index)
-        k_state = transpose([exp(im*2*pi*k*x/L) for x=1:model.size])
-        states[:, :, index] = kron(eigenvalues[:, i, j], kstate)
+    for index = 1:N_occupied
+        sorted_index = sortperm(reshape(energies, length(energies)))[index]
+        i, j = ind2sub(energies, sorted_index)
+        println(i,j)
+        k_state = [ planewave(L, 2*pi*(j-1)/L, x) for x=1:L ]
+        states[:, index] = kron(k_state, eigenstates[:, i, j])
     end
     return states
 end

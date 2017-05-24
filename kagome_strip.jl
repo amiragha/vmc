@@ -1,7 +1,11 @@
 include("lattice.jl")
 include("model.jl")
 include("hopping.jl")
+include("randomUtils.jl")
+include("configuration.jl")
+include("slaterdet2.jl")
 include("wavefunction.jl")
+include("measurement.jl")
 include("monte-carlo.jl")
 
 function make_kagome_strip_model(L::Int, mu::Float64, tc::Complex128)
