@@ -32,6 +32,5 @@ function measure(ms::Measurement,
 end
 
 function report(measurement::Measurement)
-    println(mean(measurement.data,2))
-    println(std(measurement.data,2))
+    return mean(measurement.data,2)
 end

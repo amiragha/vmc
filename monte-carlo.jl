@@ -42,5 +42,5 @@ function runVMC(model::Model, N_steps=20000)
         total_num_of_tries += 1
     end
     println(total_num_of_tries, N_steps)
-    report(half_correlations)
+    plot_structure(report(half_correlations), num_sites, :chain)
 end

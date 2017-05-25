@@ -6,6 +6,7 @@ include("configuration.jl")
 include("slaterdet2.jl")
 include("wavefunction.jl")
 include("measurement.jl")
+include("plot-structure.jl")
 include("monte-carlo.jl")
 
 function make_periodic_chain_model(L::Int)
