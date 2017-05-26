@@ -47,7 +47,7 @@ end
 # the space part is column first
 function meanfield_states(model::Model, N_occupied::Int)
     energies, eigenstates = solve_hopping(model)
-    println(energies)
+    println("energies = ", energies)
 
     L = model.lattice.size
     states = zeros(Complex128,
@@ -57,9 +57,10 @@ function meanfield_states(model::Model, N_occupied::Int)
     for index = 1:N_occupied
         sorted_index = sortperm(reshape(energies, length(energies)))[index]
         i, j = ind2sub(energies, sorted_index)
-        println(i,j)
+        println("lowest energy indeces = ", i,", ", j)
         k_state = [ planewave(L, 2*pi*(j-1)/L, x) for x=1:L ]
         states[:, index] = kron(k_state, eigenstates[:, i, j])
     end
+    println(states)
     return states
 end

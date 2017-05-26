@@ -26,7 +26,7 @@ function random_wavefunction(model::Model, states::Matrix{Complex128})
 end
 
 function acceptance_probability(old_slater, new_slater)
-    old_p = norm(old_slater.det_up * old_slater.det_dn)
-    new_p = norm(new_slater.det_up * new_slater.det_dn)
+    old_p = norm(old_slater.det_up * old_slater.det_dn)^2
+    new_p = norm(new_slater.det_up * new_slater.det_dn)^2
     return min(1, new_p/old_p)
 end

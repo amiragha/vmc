@@ -19,10 +19,10 @@ function random_configuration(lattice :: Lattice1D, N_occupied)
     return Configuration(instance)
 end
 
-function swap2_config(config::Configuration, up_idx, dn_idx)
-    @assert config.instance[up_idx] == 1
-    @assert config.instance[dn_idx] == 0
+function swap2_config!(config::Configuration, up_pos::Int, dn_pos::Int)
+    @assert config.instance[up_pos] == 1
+    @assert config.instance[dn_pos] == 0
 
-    config.instance[up_idx] = 0
-    config.instance[dn_idx] = 1
+    config.instance[up_pos] = 0
+    config.instance[dn_pos] = 1
 end

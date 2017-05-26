@@ -15,17 +15,17 @@ type SlaterDet2
     end
 end
 
-function slater_swap_column(slater::SlaterDet2,
-                            up_idx::Int,
-                            dn_idx::Int)
+function slater_change_column(slater::SlaterDet2,
+                              up_idx::Int,
+                              dn_idx::Int,
+                              new_col_up::Vector{Complex128},
+                              new_col_dn::Vector{Complex128})
 
     mat_up = copy(slater.matrix_up)
     mat_dn = copy(slater.matrix_dn)
-    col_up = mat_up[:, up_idx]
-    col_dn = mat_dn[:, dn_idx]
 
-    mat_up[:, up_idx] = col_dn
-    mat_dn[:, dn_idx] = col_up
+    mat_up[:, up_idx] = new_col_up
+    mat_dn[:, dn_idx] = new_col_dn
 
     return SlaterDet2(mat_up, mat_dn)
 end

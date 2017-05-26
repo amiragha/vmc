@@ -1,13 +1,4 @@
-include("lattice.jl")
-include("model.jl")
-include("hopping.jl")
-include("randomUtils.jl")
-include("configuration.jl")
-include("slaterdet2.jl")
-include("wavefunction.jl")
-include("measurement.jl")
-include("plot-structure.jl")
-include("monte-carlo.jl")
+include("include.jl")
 
 function make_periodic_chain_model(L::Int)
     sites = [
@@ -22,7 +13,7 @@ function make_periodic_chain_model(L::Int)
     lattice = Lattice1D(unitcell, L, :periodic)
 
     amplitudes_1site = Dict(:s1 => 0)
-    amplitudes_2site = Dict(:e1 => complex(1))
+    amplitudes_2site = Dict(:e1 => complex(-1))
 
     modelname = "chain"
     return Model(modelname,
@@ -31,5 +22,5 @@ function make_periodic_chain_model(L::Int)
                  amplitudes_2site)
 end
 
-model = make_periodic_chain_model(10)
-@time runVMC(model, 50000)
+model = make_periodic_chain_model(24)
+@time runVMC(model, 200000)

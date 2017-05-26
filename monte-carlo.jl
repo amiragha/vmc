@@ -1,18 +1,35 @@
 function step!(wf::WaveFunction)
+    #@show wf
     # choose randomly from uplist and dnlist
+    #@show
     up_index = rand(1:length(wf.uplist))
+    #@show
     dn_index = rand(1:length(wf.dnlist))
+    #@show
+    up_pos = wf.uplist[up_index]
+    #@show
+    dn_pos = wf.dnlist[dn_index]
 
-    new_slater = slater_swap_column(wf.slater, up_index, dn_index)
+
+    # make the new slater determinants
+    #@show
+    new_col_up = wf.states[dn_pos,:]
+    #@show
+    new_col_dn = wf.states[up_pos,:]
+
+    #@show
+    new_slater = slater_change_column(wf.slater, up_index, dn_index,
+                                      new_col_up, new_col_dn)
 
     if rand(Float64) < acceptance_probability(wf.slater,
                                               new_slater)
         # update wavefunction fields
-        swap2_config(wf.configuration,
-                     wf.uplist[up_index], wf.dnlist[dn_index])
-        wf.uplist[up_index], wf.dnlist[dn_index] =
-            wf.dnlist[dn_index], wf.uplist[up_index]
+        swap2_config!(wf.configuration,
+                      up_pos, dn_pos)
+        wf.uplist[up_index], wf.dnlist[dn_index] = dn_pos, up_pos
         wf.slater = new_slater
+
+        #@show wf
         return true
     else
         return false
@@ -34,13 +51,13 @@ function runVMC(model::Model, N_steps=20000)
     step = 1
     total_num_of_tries = 0
     while step < N_steps + 1
-        println(step)
         if step!(wavefunction)
-            measure(half_correlations, wavefunction)
+            println(step)
+            measure!(half_correlations, wavefunction)
             step += 1
         end
         total_num_of_tries += 1
     end
     println(total_num_of_tries, N_steps)
-    plot_structure(report(half_correlations), num_sites, :chain)
+    report(half_correlations)
 end

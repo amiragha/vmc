@@ -1,12 +1,4 @@
-include("lattice.jl")
-include("model.jl")
-include("hopping.jl")
-include("randomUtils.jl")
-include("configuration.jl")
-include("slaterdet2.jl")
-include("wavefunction.jl")
-include("measurement.jl")
-include("monte-carlo.jl")
+include("include.jl")
 
 function make_kagome_strip_model(L::Int, mu::Float64, tc::Complex128)
     sites = [
@@ -39,5 +31,5 @@ function make_kagome_strip_model(L::Int, mu::Float64, tc::Complex128)
                  amplitudes_2site)
 end
 
-model = make_kagome_strip_model(6,1.,complex(2.))
-runVMC(model)
+model = make_kagome_strip_model(24,2.5,complex(1.))
+@time runVMC(model, 3000)
