@@ -10,7 +10,7 @@ end
 
 function plot_structure(data, N, pattern):
     @assert length(data) == div(N*(N-1),2)
-    correlations = ones(N,N) * 0.25
+    correlations = eye(N,N) * 0.25
     if pattern == :chain
         for i = 1:N
             for j = 1:N
@@ -23,8 +23,8 @@ function plot_structure(data, N, pattern):
         ys = zeros(Float64, div(N,2)+1)
         for i=1:N
             ys = rfft(circshift(correlations[:, i],1-i))
-            plot(real(ys))
-            savefig("plot$i.pdf")
+            plot!(real(ys))
         end
+        savefig("plot.pdf")
     end
 end

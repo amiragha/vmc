@@ -31,5 +31,5 @@ function make_periodic_chain_model(L::Int)
                  amplitudes_2site)
 end
 
-model = make_periodic_chain_model(6)
-runVMC(model)
+model = make_periodic_chain_model(10)
+@time runVMC(model, 50000)
