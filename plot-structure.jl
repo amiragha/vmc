@@ -1,8 +1,8 @@
     using Plots
 using HDF5
 
-data = h5read("output.h5", "correlations")
-println(data)
+data = h5read("vmc4274,kagomestripLC,Lx=32periodic,mu=-2.5,tcr=1.0,tcphi=0.0.h5", "correlations")
+#println(data)
 
 function index_of(m, n, N)
     if m > n
@@ -12,9 +12,10 @@ function index_of(m, n, N)
     end
 end
 
-function plot_structure(data, N, pattern):
+function plot_structure(data::Vector{Float64}, N::Int, pattern::Symbol):
     @assert length(data) == div(N*(N-1),2)
-    correlations = eye(N,N) * 0.25
+    avg_sfactor = zeros(Float64, div(N,2)+1)
+    correlations = eye(Float64, N,N) * 0.25
     if pattern == :chain
         for i = 1:N
             for j = 1:N
@@ -35,17 +36,21 @@ function plot_structure(data, N, pattern):
         for i = 1:N
             for j = 1:N
                 if i != j
-                    correlations[i,j] = data[index_of(3*(i-1)+1,3*(j-1)+1,3*N)]
+                    i_middle = 3*(i-1) + 2
+                    j_middle = 3*(j-1) + 2
+                    correlations[i,j] = data[index_of(i_middle,j_middle,3*N)]
                 end
             end
         end
         ys = zeros(Float64, div(N,2)+1)
         for i=1:N
             ys = rfft(circshift(correlations[:, i],1-i))
-            plot!(real(ys))
+            avg_sfactor += real(ys)
+            #plot!(real(ys))
         end
+        plot(3*avg_sfactor/N)
         savefig("plot.pdf")
     end
 end
 
-plot_structure(data, 24, :chain)
+plot_structure(data, 32, :kagome)
