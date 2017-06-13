@@ -12,35 +12,45 @@ function DetMatrix(mat::Matrix{Complex128})
 end
 
 """
-det_ratio_1col(dmat::DetMatrix, new_col:: Vector{Complex128}, col_index :: Int)
+det_ratio_1col(dmat::DetMatrix, col:: Vector{Complex128}, c :: Int)
 
 Making use of the Matrix Determinant Lemma (MDL), finds the ratio of
-the new determinant to old one given by the change of `col_index`
-column to `new_col` in the `dmat`.
+the new determinant to old one given by the change of `c`
+column to `col` in the `dmat`.
 
 returns determinant ratio.
 """
 function det_ratio_1col(dmat      :: DetMatrix,
-                        new_col   :: Vector{Complex128},
-                        col_index :: Int)
+                        col   :: Vector{Complex128},
+                        c :: Int)
     # row syntax return a column(Vector)!
     # need a dot product which doesn't conjugate the first vector!
-    return sum(dmat.inverse[col_index,:] .* new_col)
+    return (dmat.inverse[[c],:] * col)[1]
 end
 
 """
-exact_det_ratio_1col(dmat::DetMatrix, new_col:: Vector{Complex128}, col_index :: Int)
+function det_ratio_2col(dmat:: DetMatrix, cols:: Matrix{Complex128}, c1:: Int, c2:: Int)
 
-exact version of the determinant ratio for 1 column change
+Making use of the Matrix Determinant Lemma (MDL), finds the matrix 2x2
+that its determinant is ratio of the new determinant to old one given
+by the change of `c1, c2` column to the two columns in `cols`
+respectively.
 
-returns determinant ratio.
+returns determinant ratio matrix (2x2)
 """
-function exact_det_ratio_1col(dmat      :: DetMatrix,
-                              new_col   :: Vector{Complex128},
-                              col_index :: Int)
-    newmat = copy(dmat.matrix)
-    newmat[:,col_index] = new_col
-    return det(newmat)/dmat.determinant
+function det_ratio_2cols(dmat      :: DetMatrix,
+                         cols      :: Matrix{Complex128},
+                         c1        :: Int,
+                         c2        :: Int)
+    # row syntax return a column(Vector)!
+    # need a dot product which doesn't conjugate the first vector!\
+    ## TODO: find a vectorize way to do this?
+    detratio_mat = zeros(Complex128, 2, 2)
+    detratio_mat[1, 1] = (dmat.inverse[[c1],:] * cols[:,1])[1]
+    detratio_mat[1, 2] = (dmat.inverse[[c1],:] * cols[:,2])[1]
+    detratio_mat[2, 1] = (dmat.inverse[[c2],:] * cols[:,1])[1]
+    detratio_mat[2, 2] = (dmat.inverse[[c2],:] * cols[:,2])[1]
+    return detratio_mat
 end
 
 """
@@ -53,42 +63,51 @@ determinant and inverse of the new DetMatrix given by the change of
 updates dmat.
 """
 function update_detmatrix_1col!(dmat      :: DetMatrix,
-                                new_col   :: Vector{Complex128},
-                                col_index :: Int,
+                                col   :: Vector{Complex128},
+                                c :: Int,
                                 detratio ::  Complex128)
     # update matrix
-    dmat.matrix[:,col_index] = new_col
+    dmat.matrix[:,c] = col
 
     # update determinant
     dmat.determinant *= detratio
 
     # update inverse, note: column is an auxiliary vector
     # TODO: elegance!
-    column = dmat.inverse * new_col
-    column[col_index] -= 1
-    dmat.inverse -= (column .* transpose(dmat.inverse[col_index,:]))/detratio
+    column = dmat.inverse * col
+    column[c] -= 1
+
+    dmat.inverse -= (column * dmat.inverse[[c],:])/detratio
     return nothing
 end
 
 """
-exact_update_detmatrix_1col!(dmat:: DetMatrix, new_col   :: Vector{Complex128}, col_index :: Int, detratio ::  Complex128)
+update_detmatrix_2cols!(dmat::DetMatrix, cols:: Matrix{Complex128}, c1:: Int, c1:: Int, detratio ::  Matrix{Complex128})
 
-exact version that updates the matrix, determinant and inverse of the
-new DetMatrix given by the change of `col_index` column to `new_col`.
+Making use of the generalized Sherman-Morrison formula (Woodbury?!),
+updates the matrix, determinant and inverse of the new DetMatrix given
+by the change of `c1,c2` columns to the two columns in `cols` respectively.
 
 updates dmat.
 """
-function exact_update_detmatrix_1col!(dmat      :: DetMatrix,
-                                      new_col   :: Vector{Complex128},
-                                      col_index :: Int,
-                                      detratio ::  Complex128)
-    newmat = copy(dmat.matrix)
-    newmat[:, col_index] = new_col
+function update_detmatrix_2cols!(dmat      :: DetMatrix,
+                                 cols      :: Matrix{Complex128},
+                                 c1        :: Int,
+                                 c2        :: Int,
+                                 detratio_mat  ::  Matrix{Complex128})
+    # update matrix
+    dmat.matrix[:,c1] = cols[:, 1]
+    dmat.matrix[:,c2] = cols[:, 2]
 
-    dmat.matrix = newmat
-    dmat.inverse = inv(newmat)
-    dmat.determinant = det(newmat)
+    # update determinant
+    dmat.determinant *= det(detratio_mat)
+
+    # update inverse, note: columns is an auxiliary 2 column matrix
+    # TODO: elegance!
+    columns = dmat.inverse * cols
+    columns[c1, 1] -= 1
+    columns[c2, 2] -= 1
+
+    dmat.inverse -= columns * inv(detratio_mat) * dmat.inverse[[c1,c2], :]
     return nothing
 end
-
-## TODO: implement the two column version
