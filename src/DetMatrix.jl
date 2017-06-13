@@ -90,3 +90,5 @@ function exact_update_detmatrix_1col!(dmat      :: DetMatrix,
     dmat.determinant = det(newmat)
     return nothing
 end
+
+## TODO: implement the two column version
