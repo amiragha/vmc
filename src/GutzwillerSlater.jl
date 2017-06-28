@@ -28,13 +28,16 @@ function random_gutzwiller_half(states::Matrix{Complex128})
     # even lattice size and half-filling
     @assert 2*num_states == num_sites
 
-    # TODO: can these be simplified in one function?
+    ## TODO: can these be simplified in one function?
     configuration = random_ones(num_sites, num_states)
     uplist = find(x->x==1, configuration)
     dnlist = find(x->x==0, configuration)
 
-    # TODO: should be possible to slice them from states, directly!
-    # NOTE: the states(orbitals) are rows and positions are columns
+    ## TODO: should be possible to slice them from states, directly!
+    # NOTE: while the states(orbitals) are originally given on
+    # cols. here we put states on rows and positions on
+    # columns. Notice the order of the for expression!
+
     upslater = DetMatrix([states[x,k] for k=1:num_states, x=uplist])
     dnslater = DetMatrix([states[x,k] for k=1:num_states, x=dnlist])
 
