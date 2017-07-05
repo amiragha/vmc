@@ -111,3 +111,20 @@ function update_detmatrix_2cols!(dmat      :: DetMatrix,
     dmat.inverse -= columns * inv(detratio_mat) * dmat.inverse[[c1,c2], :]
     return nothing
 end
+
+"""
+check_and_update_detmatrix!(dmat::DetMatrix)
+
+check the inverse and determinant in the detmat and if they are off,
+replace them with exact values. TODO: What should the tolerance be here?!
+"""
+function check_and_update_detmatrix!(dmat::DetMatrix)
+    if isapprox(dmat.matrix * dmat.inverse,
+                eye(Complex128, size(dmat.matrix)[1]), rtol=1.e-13)
+        return nothing
+    else
+        print("o")
+        dmat.inverse = inv(dmat.matrix)
+        return nothing
+    end
+end

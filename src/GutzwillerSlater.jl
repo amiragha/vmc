@@ -101,3 +101,8 @@ function propose_step!(wf::GutzwillerSlater)
         return false
     end
 end
+
+function check_and_update_gutzwiller!(wf::GutzwillerSlater)
+   check_and_update_detmatrix!(wf.upslater)
+   check_and_update_detmatrix!(wf.dnslater)
+end

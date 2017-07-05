@@ -57,6 +57,7 @@ function runVMC(model::Model, total_steps::Int, debug::Bool=false)
 
             # display progress every 1000 accepted steps
             if sim.num_accepted % 1000 == 0
+                check_and_update_gutzwiller!(sim.wavefunction)
                 print("*")
             end
 
