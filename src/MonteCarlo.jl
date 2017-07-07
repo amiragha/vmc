@@ -37,8 +37,9 @@ function runVMC(model::Model, total_steps::Int, debug::Bool=false)
 
     num_sites = length(model.lattice.sites)
 
-    states = solve_free_full(model, div(num_sites,2))
+    #states = solve_free_full(model, div(num_sites,2))
     #states = solve_free_periodic(model, div(num_sites,2))
+    states = solve_free_periodic(model, div(num_sites,2), :APBC)
 
     wavefunction = random_gutzwiller_half(states)
 

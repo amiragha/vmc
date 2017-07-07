@@ -119,12 +119,18 @@ check the inverse and determinant in the detmat and if they are off,
 replace them with exact values. TODO: What should the tolerance be here?!
 """
 function check_and_update_detmatrix!(dmat::DetMatrix)
-    if isapprox(dmat.matrix * dmat.inverse,
-                eye(Complex128, size(dmat.matrix)[1]), rtol=1.e-13)
-        return nothing
-    else
-        print("o")
-        dmat.inverse = inv(dmat.matrix)
-        return nothing
+    lu = lufact(dmat.matrix)
+    exact_det = det(lu)
+    exact_inv = inv(lu)
+    if !isapprox(dmat.determinant, exact_det, rtol=1.e-14)
+        print("d")
     end
+    # if !isapprox(dmat.matrix * dmat.inverse,
+    #             eye(Complex128, size(dmat.matrix)[1]), rtol=1.e-13)
+    if !isapprox(dmat.inverse, exact_inv, rtol=1.e-13)
+        print("i")
+    end
+    dmat.determinant = exact_det
+    dmat.inverse = exact_inv
+    return nothing
 end
