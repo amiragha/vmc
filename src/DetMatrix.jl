@@ -1,5 +1,5 @@
 # DetMatrix type to represent determinantal wavefunctions
-type DetMatrix
+mutable struct DetMatrix
     matrix      :: Matrix{Complex128}
     determinant :: Complex128
     inverse     :: Matrix{Complex128}
@@ -12,28 +12,28 @@ function DetMatrix(mat::Matrix{Complex128})
 end
 
 """
-det_ratio_1col(dmat::DetMatrix, col:: Vector{Complex128}, c :: Int)
+    det_ratio_1col(dmat, col, c)
 
 Making use of the Matrix Determinant Lemma (MDL), finds the ratio of
-the new determinant to old one given by the change of `c`
+the new determinant to old one given by the change of `c`th
 column to `col` in the `dmat`.
 
 returns determinant ratio.
 """
-function det_ratio_1col(dmat      :: DetMatrix,
-                        col   :: Vector{Complex128},
-                        c :: Int)
-    # row syntax return a column(Vector)!
-    # need a dot product which doesn't conjugate the first vector!
+function det_ratio_1col(dmat :: DetMatrix,
+                        col  :: Vector{Complex128},
+                        c    :: Int)
+
+    ### TODO: use better dot product probably `vecdot`
     return (dmat.inverse[[c],:] * col)[1]
 end
 
 """
-function det_ratio_2col(dmat:: DetMatrix, cols:: Matrix{Complex128}, c1:: Int, c2:: Int)
+    det_ratio_2col(dmat, cols, c1, c2)
 
 Making use of the Matrix Determinant Lemma (MDL), finds the matrix 2x2
 that its determinant is ratio of the new determinant to old one given
-by the change of `c1, c2` column to the two columns in `cols`
+by the change of `c1, c2`th columns to the two columns in `cols`
 respectively.
 
 returns determinant ratio matrix (2x2)
@@ -42,9 +42,8 @@ function det_ratio_2cols(dmat      :: DetMatrix,
                          cols      :: Matrix{Complex128},
                          c1        :: Int,
                          c2        :: Int)
-    # row syntax return a column(Vector)!
-    # need a dot product which doesn't conjugate the first vector!\
-    ## TODO: find a vectorize way to do this?
+
+    ### TODO: find a vectorize way to do this?
     detratio_mat = zeros(Complex128, 2, 2)
     detratio_mat[1, 1] = (dmat.inverse[[c1],:] * cols[:,1])[1]
     detratio_mat[1, 2] = (dmat.inverse[[c1],:] * cols[:,2])[1]
@@ -54,13 +53,12 @@ function det_ratio_2cols(dmat      :: DetMatrix,
 end
 
 """
-update_detmatrix_1col!(dmat:: DetMatrix, new_col   :: Vector{Complex128}, col_index :: Int, detratio ::  Complex128)
+    update_detmatrix_1col!(dmat, new_col, col_index, detratio)
 
 Making use of the Sherman-Morrison formula, updates the matrix,
 determinant and inverse of the new DetMatrix given by the change of
 `col_index` column to `new_col`.
 
-updates dmat.
 """
 function update_detmatrix_1col!(dmat      :: DetMatrix,
                                 col   :: Vector{Complex128},
@@ -82,7 +80,7 @@ function update_detmatrix_1col!(dmat      :: DetMatrix,
 end
 
 """
-update_detmatrix_2cols!(dmat::DetMatrix, cols:: Matrix{Complex128}, c1:: Int, c1:: Int, detratio ::  Matrix{Complex128})
+    update_detmatrix_2cols!(dmat, cols, c1, c1, detratio)
 
 Making use of the generalized Sherman-Morrison formula (Woodbury?!),
 updates the matrix, determinant and inverse of the new DetMatrix given
@@ -113,7 +111,7 @@ function update_detmatrix_2cols!(dmat      :: DetMatrix,
 end
 
 """
-check_and_update_detmatrix!(dmat::DetMatrix)
+    check_and_update_detmatrix!(dmat)
 
 check the inverse and determinant in the detmat and if they are off,
 replace them with exact values. TODO: What should the tolerance be here?!

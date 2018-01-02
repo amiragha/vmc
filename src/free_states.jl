@@ -1,7 +1,7 @@
 """
-solve_free_full(model::Model, num_filled::Int)
+    solve_free_full(model, num_filled)
 
-solves the eigen problem for the free hopping hamiltonian for
+solves the eigen-problem for the free hopping hamiltonian for
 `model`. If the Hamiltonian is real (hoppings are real) this gives
 real states.
 
@@ -10,12 +10,11 @@ so the matrix is of dimensions: volume x num_filled.
 """
 function solve_free_full(model::Model, num_filled::Int)
 
-    # parameter
+    # parameters
     sites = model.lattice.sites
     num_sites = length(sites)
     edges = model.lattice.edges
 
-    ### Generate the one particle Hamiltonian
     hamiltonian = zeros(Complex128, num_sites, num_sites)
 
     # onesite chemical potentials
@@ -39,26 +38,28 @@ function solve_free_full(model::Model, num_filled::Int)
 end
 
 """
-planewave(Lx::Int, k::Int, x::Int)
+    planewave(Lx, k, x)
 
 returns the value 1D plane wave wavefunction of size `L` and
 wavevector `k` at position `x` .
-"""
-planewave(Lx::Int, k::Int, x::Int) = exp(im * (2*pi*k/Lx) * x)/sqrt(Lx)
-planewave(Lx::Int, k::Float64, x::Int) = exp(im * (2*pi*k/Lx) * x)/sqrt(Lx)
 
 """
-solve_free_periodic(model::Model, num_filled::Int, periodicity::Symbol=:PBC)
+planewave(Lx::Int64, k::Int64, x::Int64) = exp(im * (2*pi*k/Lx) * x)/sqrt(Lx)
+planewave(Lx::Int64, k::Float64, x::Int64) = exp(im * (2*pi*k/Lx) * x)/sqrt(Lx)
+
+"""
+    solve_free_periodic(model, num_filled[, periodicity])
 
 solves the eigen problem for the free hopping hamiltonian for
 `model`. This version solves in the momentum space, so it only works
 for periodic lattices.
 
 returns `num_filled` eigenstates in a matrix. Each state is a column,
-so the matrix is of dimensions: volume x num_filled.
+so the matrix is of dimensions: (volume x num_filled).
+
 """
 function solve_free_periodic(model::Model,
-                             num_filled::Int,
+                             num_filled::Int64,
                              periodicity::Symbol=:PBC)
 
     @assert model.lattice.boundary == :periodic
@@ -106,7 +107,7 @@ function solve_free_periodic(model::Model,
 
     states = zeros(Complex128, num_sites * Lx, num_filled)
 
-    # TODO: explain the sorting process in words
+    ### TODO: explain the sorting process in words
     # sort energies and fill states with lowest energy eigenvectors
     for index = 1:num_filled
         sorted_index = sortperm(reshape(energies,

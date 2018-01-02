@@ -1,6 +1,6 @@
 # Gutzwiller projected slater determinant wavefunction
 # TODO: Does Gutzwiller need to carry the states?
-type GutzwillerSlater
+mutable struct GutzwillerSlater
     states :: Matrix{Complex128}
     configuration :: Vector{Int}
 
@@ -12,14 +12,13 @@ type GutzwillerSlater
 end
 
 """
-random_gutzwiller_half(states::Matrix{Complex128})
+    random_gutzwiller_half(states)
 
-Generates a Gutzwiller wavefunction with randomly chosen half up spins
-and half down spins. The input, states, is a matrix with space
-orbitals as columns. The number of orbitals(columns) has to be exactly
-half of the number of sites(rows).
+returns a Gutzwiller wavefunction with randomly chosen half up spins
+and half down spins.  The input `states` is a matrix with spatial
+orbitals as columns.  The number of orbitals(columns) has to be
+exactly half of the number of sites(rows).
 
-returns a GutzwillerSlater wavefunction
 """
 function random_gutzwiller_half(states::Matrix{Complex128})
     num_sites = size(states)[1]
@@ -28,15 +27,15 @@ function random_gutzwiller_half(states::Matrix{Complex128})
     # even lattice size and half-filling
     @assert 2*num_states == num_sites
 
-    ## TODO: can these be simplified in one function?
+    ### TODO: can these be simplified in one function?
     configuration = random_ones(num_sites, num_states)
     uplist = find(x->x==1, configuration)
     dnlist = find(x->x==0, configuration)
 
-    ## TODO: should be possible to slice them from states, directly!
-    # NOTE: while the states(orbitals) are originally given on
-    # cols. here we put states on rows and positions on
-    # columns. Notice the order of the for expression!
+    ### TODO: should be possible to slice them from states, directly!
+    ## NOTE: while the states(orbitals) are originally given on cols,
+    ## here we put states on rows and positions on columns. Notice the
+    ## order of the for expression!
 
     upslater = DetMatrix([states[x,k] for k=1:num_states, x=uplist])
     dnslater = DetMatrix([states[x,k] for k=1:num_states, x=dnlist])
@@ -47,22 +46,20 @@ function random_gutzwiller_half(states::Matrix{Complex128})
 end
 
 """
-propose_step!(wf::GutzwillerSlater)
+    propose_step!(wf)
 
 propose and, if accepted, update a step for the Gutzwiller
 wavefunction. The process is to choose randomly one up and down spin
-fermion and swap their positions.
-
-The acceptance probability is the minimum of 1 and square of the
-determinant ratio.
+fermion and swap their positions. The acceptance probability is the
+minimum of 1 and square of the determinant ratio.
 
 returns `true` if update the `wf`, and `false` otherwise.
 """
 function propose_step!(wf::GutzwillerSlater)
-    # TODO: split these operations into multiple functions.
+    ### TODO: split these operations into multiple functions.
     # randomly choose an up and down
-    # NOTE: `up/dn_index` are random indeces in `up/dnlist` pointing to
-    # positions, namely, `up/dn_site` in the wf.configuration!
+    ## NOTE: `up/dn_index` are random indeces in `up/dnlist` pointing to
+    ## positions, namely, `up/dn_site` in the wf.configuration!
     up_index = rand(1:length(wf.uplist))
     dn_index = rand(1:length(wf.dnlist))
     up_site = wf.uplist[up_index]

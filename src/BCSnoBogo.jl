@@ -1,6 +1,6 @@
 # Gutzwiller projected slater determinant wavefunction
 # TODO: Does Gutzwiller need to carry the states?
-type BCSnoBogo
+mutable struct BCSnoBogo
     states :: Matrix{Complex128}
     configuration :: Vector{Int}
 
@@ -11,7 +11,7 @@ type BCSnoBogo
 end
 
 """
-random_nobogo_half(states::Matrix{Complex128})
+    random_nobogo_half(states)
 
 Generates a nobogo wavefunction with randomly chosen half of sites to
 be occupied by both d1 and d2 fermions. The input, states, is a matrix
@@ -30,15 +30,15 @@ function random_nobogo_half(states::Matrix{Complex128})
 
     num_sites = div(size(states)[1], 2)
 
-    ## TODO: can these be simplified in one function?
+    ### TODO: can these be simplified in one function?
     configuration = random_ones(num_sites, num_states)
     olist = find(x-> x==1, configuration)
     xlist = find(x-> x==0, configuration)
 
-    ## TODO: should be possible to slice them from states, directly!
-    # NOTE: while the double states(orbitals) are originally given on
-    # cols. Here we put states on rows and positions on
-    # columns. Notice the order of the for expression!
+    ### TODO: should be possible to slice them from states, directly!
+    ## NOTE: while the double states(orbitals) are originally given on
+    ## cols.  Here we put states on rows and positions on
+    ## columns. Notice the order of the for expression!
     slater = DetMatrix(
         hcat(
             [states[x,           k] for k=1:num_states, x=olist],
@@ -51,22 +51,20 @@ function random_nobogo_half(states::Matrix{Complex128})
 end
 
 """
-propose_step!(wf::BCSnoBogo)
+    propose_step!(wf)
 
-propose and, if accepted, update a step for the BCSnoBogo
-wavefunction. The process is to choose randomly one occupied site
-and one unoccupied one.
-
-The acceptance probability is the minimum of 1 and square of the
-determinant ratio.
+propose and, if accepted, update a step for the BCSnoBogo wavefunction
+`wf`.  The process is to choose randomly one occupied site and one
+unoccupied one.  The acceptance probability is the minimum of 1 and
+square of the determinant ratio.
 
 returns `true` if updates the `wf`, and `false` otherwise.
 """
 function propose_step!(wf::BCSnoBogo)
-    # TODO: split these operations into multiple functions.
+    ### TODO: split these operations into multiple functions.
     # randomly choose one occupied and one unoccupied site
-    # NOTE: `o/x_index` are random indeces in `o/xlist` pointing to
-    # positions, namely, `o/x_site` in the wf.configuration!
+    ##NOTE: `o/x_index` are random indeces in `o/xlist` pointing to
+    ## positions, namely, `o/x_site` in the `wf.configuration`
     o_index = rand(1:length(wf.olist))
     x_index = rand(1:length(wf.xlist))
     o_site = wf.uplist[o_index]

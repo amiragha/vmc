@@ -1,20 +1,22 @@
-type VMCgutzwiller
+mutable struct VMCgutzwiller
     model :: Model
 
     wavefunction :: GutzwillerSlater
 
-    total_steps :: Int
+    total_steps :: Int64
 
-    num_proposed :: Int
-    num_accepted :: Int
+    num_proposed :: Int64
+    num_accepted :: Int64
 
     measurement :: Measurement
 end
 
 """
-report(simulation::VMCgutzwiller)
+    report(simulation)
 
-reports the results and saves the measurements.
+reports the results and saves the measurements for VMCgutzwiller
+`simulation`.
+
 """
 function report(simulation::VMCgutzwiller)
     println("Finished with ", simulation.total_steps,
@@ -26,14 +28,16 @@ function report(simulation::VMCgutzwiller)
 end
 
 """
-runVMC(model::Model, total_steps::Int)
+    runVMC(model, total_steps)
 
-runs the Variational Monte Carlo simulation until it moves by
+runs the Variational Monte-Carlo simulation until it moves by
 `total_steps` and measures the measurements at each accepted step. It
 finally reports the results.
 
 """
-function runVMC(model::Model, total_steps::Int, debug::Bool=false)
+function runVMC(model::Model,
+                total_steps::Int64,
+                debug::Bool=false)
 
     num_sites = length(model.lattice.sites)
 

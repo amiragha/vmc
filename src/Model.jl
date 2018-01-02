@@ -1,5 +1,5 @@
 # The Model type definition
-type Model
+struct Model
     name :: String
     lattice :: Lattice1D
     amplitudes_1site :: Dict{Symbol, Float64}
@@ -7,16 +7,13 @@ type Model
 end
 
 """
-chain(L:Int, boundary::Symbol, mu::Float64, t:Complex128)
+    chain(Lx, boundary, mu, t)
 
-return 1D chain model with possible boundary conditions
-`:periodic` :open`. `open` is just normal OBC, which
-is L unitcells.
+return 1D chain model with possible boundary conditions `:periodic`
+:open`. `open` is just normal OBC, which is `Lx` unitcells.  The
+parameters `mu` is the chemical potential and `t` is the hopping
+amplitude respectively.
 
-the parameters `mu` is the chemical potential and
-`tc` is the hopping amplitude.
-
-returns Model.
 """
 function chain(Lx::Int,
                boundary::Symbol,
@@ -36,18 +33,14 @@ function chain(Lx::Int,
 end
 
 """
-kagomestrip_LC(L:Int, boundary::Symbol, mu::Float64, tc:Complex128)
+    kagomestrip_LC(Lx, boundary, mu, tc)
 
 return the kagome strip Leg-Cross model with boundary conditions
 `:periodic`, `:opensym` and `:open`. `open` is just normal OBC, which
 is L unitcells. `opensym` adds one extra middle site to make the open
-lattice symmetric.
+lattice symmetric.  The parameters `mu` is the chemical potential on
+the middle sites and `tc` is the hopping on the cross bonds.
 
-the parameters `mu` is the chemical potential on the middle sites and
-`tc` is the hopping on the cross bonds. `tl` is set to `1.0` by
-default.
-
-returns Model.
 """
 function kagomestrip_LC(Lx::Int,
                         boundary::Symbol,

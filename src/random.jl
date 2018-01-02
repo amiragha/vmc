@@ -1,10 +1,12 @@
 """
-random_ones(n::Int, m::Int)
+    random_ones(n, m)
 
-returns a Vector{Int} of size `n` with `m` randomly chosen 1s and the
-rest 0s.
+returns a Vector{Int64} of size `n` with `m` randomly chosen 1s and
+the rest 0s.  TODO: explain how it works?
+
 """
-function random_ones(n::Int, m::Int)
+function random_ones(n::Int64,
+                     m::Int64)
     @assert n > 0 && m <= n && m > 0
 
     # TODO: implement the m > n/2 case with random for zeros!

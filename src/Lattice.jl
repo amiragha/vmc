@@ -1,15 +1,15 @@
 # type definition for Edge and Lattice
-type Site
+struct Site
     brand :: Symbol
 end
 
-type Edge
+struct Edge
     brand :: Symbol
     site1 :: Int
     site2 :: Int
 end
 
-type UCEdge1D
+struct UCEdge1D
     brand :: Symbol
     site1 :: Int
     site2 :: Int
@@ -18,7 +18,7 @@ end
 
 abstract Lattice
 
-type Lattice1D <: Lattice
+struct Lattice1D <: Lattice
     Lx :: Int
     unitcell_sites :: Vector{Site}
     unitcell_edges :: Vector{UCEdge1D}
@@ -27,12 +27,13 @@ type Lattice1D <: Lattice
     boundary :: Symbol
 end
 
-# TODO: possibly combine the next two functions
+### TODO: possibly combine the next two functions
 """
-make_periodic_lattice(Lx::Int, uc_sites::Vector{Site}, uc_edges::Vector{UCEdge1D})
+    make_periodic_lattice(Lx, uc_sites, uc_edges)
 
 returns a periodic lattice by making the full sites and edges vector
 using the unitcell `uc_sites` and `uc_edges`.
+
 """
 function make_periodic_lattice(Lx::Int,
                                uc_sites::Vector{Site},
@@ -67,12 +68,13 @@ function make_periodic_lattice(Lx::Int,
 end
 
 """
-make_open_lattice(Lx::Int, uc_sites::Vector{Site}, uc_edges::Vector{UCEdge1D}, obc_prescription::Vector{Int})
+    make_open_lattice(Lx, uc_sites, uc_edges, obc_prescription)
 
 returns an open lattice by making the full sites and edges vector
 using the unitcell `uc_sites` and `uc_edges`. The boundary condition
 is handled using the prescription for obc in `obc_prescription`
 which say how many extra sites should be added.
+
 """
 function make_open_lattice(Lx::Int,
                            uc_sites::Vector{Site},
@@ -121,10 +123,10 @@ function make_open_lattice(Lx::Int,
 end
 
 """
-chain_lattice(L::Int, boundary::Symbol)
+    chain_lattice(Lx, boundary)
 
-Definition of the 1D chain lattice. Generates lattice
-for chain of size `L`. The current supported boundary
+Definition of the 1D chain lattice.  Returns lattice
+for chain of size `Lx`. The current supported boundary
 conditions are `:periodic` and `:open`.
 
 returns Lattice1D
@@ -150,15 +152,14 @@ function chain_lattice(Lx::Int, boundary::Symbol)
 end
 
 """
-kagomestrip_lattice(L::Int, boundary::Symbol)
+    kagomestrip_lattice(L, boundary)
 
-Definition of the kagome strip Leg-Cross lattice. Generates lattice
+Definition of the kagome strip Leg-Cross lattice.  Returns lattice
 for the kagome strip of size `L`. The current supported boundary
 conditions are `:periodic`, `:opensym` and `:open`. `open` is just
 normal OBC, which is L unitcells. `opensym` adds one extra middle
 site to make the open lattice symmetric.
 
-returns Lattice1D
 """
 function kagomestrip_lattice(Lx::Int, boundary::Symbol)
 

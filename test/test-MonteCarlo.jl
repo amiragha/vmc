@@ -1,12 +1,12 @@
 # test small chain
 
-# model = AmirVMC.chain(4, :periodic, 0., complex(1.0))
-# AmirVMC.runVMC(model, 2, true)
+# model = Tmp.chain(4, :periodic, 0., complex(1.0))
+# Tmp.runVMC(model, 2, true)
 
 # test VMC for chain
 
-# model = AmirVMC.chain(32, :periodic, 0., complex(1.0))
-# AmirVMC.runVMC(model, 10000)
+# model = Tmp.chain(32, :periodic, 0., complex(1.0))
+# Tmp.runVMC(model, 10000)
 
 # test VMC for kagome strip
 
@@ -34,6 +34,6 @@ list = [
 for i=1:size(list)[1]
     t = list[i, 1]
     m = list[i, 2]
-    model = AmirVMC.kagomestrip_LC(64, :open, m, complex(t))
-    AmirVMC.runVMC(model, 16000000)
+    model = Tmp.kagomestrip_LC(64, :open, m, complex(t))
+    Tmp.runVMC(model, 16000000)
 end

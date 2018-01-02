@@ -1,4 +1,4 @@
-import AmirVMC
+import Tmp
 
 using Base.Test
 

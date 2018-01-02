@@ -1,4 +1,4 @@
-type Measurement{T}
+mutable struct Measurement{T} where {T<:Number}
     num_operators :: Int
     accdata :: Vector{T}
     measure_capacity :: Int
