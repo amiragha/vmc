@@ -16,7 +16,7 @@ struct UCEdge1D
     offset :: Int
 end
 
-abstract Lattice
+abstract type Lattice end
 
 struct Lattice1D <: Lattice
     Lx :: Int

@@ -1,44 +1,48 @@
-# random matrix, vector and index1
-randmat = rand(Complex128, 10, 10)
-cols = rand(Complex128, 10, 2)
-c1 = rand(1:10)
-c2 = rand(1:10)
+@testset "DetMatrix" begin
+    # random matrix, vector and index1
+    randmat = rand(Complex128, 10, 10)
+    cols = rand(Complex128, 10, 2)
+    c1 = rand(1:10)
+    c2 = rand(1:10)
 
-### 1 column change
-mat1 = copy(randmat)
-mat2 = copy(mat1)
-mat2[:,c1] = cols[:,1]
+    @testset "one column" begin
+        mat1 = copy(randmat)
+        mat2 = copy(mat1)
+        mat2[:,c1] = cols[:,1]
 
-detmat1 = Tmp.DetMatrix(mat1)
-detmat2 = Tmp.DetMatrix(mat2)
+        detmat1 = Tmp.DetMatrix(mat1)
+        detmat2 = Tmp.DetMatrix(mat2)
 
-# test determinant
-detratio_exact = detmat2.determinant/detmat1.determinant
-detratio = Tmp.det_ratio_1col(detmat1, cols[:,1], c1)
-@test isapprox(detratio_exact, detratio)
+        # test determinant
+        detratio_exact = detmat2.determinant/detmat1.determinant
+        detratio = Tmp.det_ratio_1col(detmat1, cols[:,1], c1)
+        @test detratio_exact ≈ detratio
 
-# test the update
-Tmp.update_detmatrix_1col!(detmat1, cols[:,1], c1, detratio)
-@test isapprox(detmat1.inverse, detmat2.inverse)
-@test isapprox(detmat1.matrix, detmat2.matrix)
-@test isapprox(detmat1.determinant, detmat2.determinant)
+        # test the update
+        Tmp.update_detmatrix_1col!(detmat1, cols[:,1], c1, detratio)
+        @test detmat1.inverse ≈ detmat2.inverse
+        @test detmat1.matrix ≈ detmat2.matrix
+        @test detmat1.determinant ≈ detmat2.determinant
+    end
 
-### 2 column change
-mat1 = copy(randmat)
-mat2 = copy(mat1)
-mat2[:,c1] = cols[:,1]
-mat2[:,c2] = cols[:,2]
+    @testset "two column" begin
+        mat1 = copy(randmat)
+        mat2 = copy(mat1)
+        mat2[:,c1] = cols[:,1]
+        mat2[:,c2] = cols[:,2]
 
-detmat1 = Tmp.DetMatrix(mat1)
-detmat2 = Tmp.DetMatrix(mat2)
+        detmat1 = Tmp.DetMatrix(mat1)
+        detmat2 = Tmp.DetMatrix(mat2)
 
-# test determinant
-detratio_exact = detmat2.determinant/detmat1.determinant
-detratio_mat = Tmp.det_ratio_2cols(detmat1, cols, c1, c2)
-@test isapprox(detratio_exact, det(detratio_mat))
+        # test determinant
+        detratio_exact = detmat2.determinant/detmat1.determinant
+        detratio_mat = Tmp.det_ratio_2cols(detmat1, cols, c1, c2)
+        @test isapprox(detratio_exact, det(detratio_mat))
 
-# test the update
-Tmp.update_detmatrix_2cols!(detmat1, cols, c1, c2, detratio_mat)
-@test isapprox(detmat1.inverse, detmat2.inverse)
-@test isapprox(detmat1.matrix, detmat2.matrix)
-@test isapprox(detmat1.determinant, detmat2.determinant)
+        # test the update
+        Tmp.update_detmatrix_2cols!(detmat1, cols, c1, c2, detratio_mat)
+        @test isapprox(detmat1.inverse, detmat2.inverse)
+        @test isapprox(detmat1.matrix, detmat2.matrix)
+        @test isapprox(detmat1.determinant, detmat2.determinant)
+    end
+end
