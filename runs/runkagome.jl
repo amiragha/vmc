@@ -1,12 +1,12 @@
 # test small chain
 
-# model = Tmp.chain(4, :periodic, 0., complex(1.0))
-# Tmp.runVMC(model, 2, true)
+# model = VMC.chain(4, :periodic, 0., complex(1.0))
+# VMC.runVMC(model, 2, true)
 
 # test VMC for chain
 
-# model = Tmp.chain(32, :periodic, 0., complex(1.0))
-# Tmp.runVMC(model, 10000)
+# model = VMC.chain(32, :periodic, 0., complex(1.0))
+# VMC.runVMC(model, 10000)
 
 # run some VMC for kagome
 
@@ -34,6 +34,6 @@ list = [
 for i=1:size(list)[1]
     t = list[i, 1]
     m = list[i, 2]
-    model = Tmp.kagomestrip_LC(32, :periodic, m, complex(t))
-    Tmp.runVMC(model, 400000)
+    model = VMC.kagomestrip_LC(32, :periodic, m, complex(t))
+    VMC.runVMC(model, 400000)
 end

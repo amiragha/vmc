@@ -3,7 +3,7 @@ struct Model
     name :: String
     lattice :: Lattice1D
     amplitudes_1site :: Dict{Symbol, Float64}
-    amplitudes_2site :: Dict{Symbol, Complex128}
+    amplitudes_2site :: Dict{Symbol, ComplexF64}
 end
 
 """
@@ -18,7 +18,7 @@ amplitude respectively.
 function chain(Lx::Int,
                boundary::Symbol,
                mu::Float64,
-               t::Complex128)
+               t::ComplexF64)
 
     name = "chain,Lx$Lx$boundary,mu=$mu,t=$(norm(t))"
 
@@ -45,7 +45,7 @@ the middle sites and `tc` is the hopping on the cross bonds.
 function kagomestrip_LC(Lx::Int,
                         boundary::Symbol,
                         mu::Float64,
-                        tc::Complex128)
+                        tc::ComplexF64)
 
     name = "kagomestripLC,Lx=$Lx$boundary,mu=$mu,tcr=$(norm(tc)),tcphi=$(angle(tc))"
 

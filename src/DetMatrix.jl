@@ -1,14 +1,15 @@
 # DetMatrix type to represent determinantal wavefunctions
 mutable struct DetMatrix
-    matrix      :: Matrix{Complex128}
-    determinant :: Complex128
-    inverse     :: Matrix{Complex128}
+    matrix      :: Matrix{ComplexF64}
+    determinant :: ComplexF64
+    inverse     :: Matrix{ComplexF64}
 end
 
 # constructor with just a matrix
-function DetMatrix(mat::Matrix{Complex128})
-    lu = lufact(mat)
-    return DetMatrix(mat, det(mat), inv(mat))
+function DetMatrix(mat::Matrix{ComplexF64})
+    fact = lu(mat)
+    #return DetMatrix(mat, det(mat), inv(mat))
+    return DetMatrix(mat, det(fact), inv(fact))
 end
 
 """
@@ -21,7 +22,7 @@ column to `col` in the `dmat`.
 returns determinant ratio.
 """
 function det_ratio_1col(dmat :: DetMatrix,
-                        col  :: Vector{Complex128},
+                        col  :: Vector{ComplexF64},
                         c    :: Int)
 
     ### TODO: use better dot product probably `vecdot`
@@ -39,12 +40,12 @@ respectively.
 returns determinant ratio matrix (2x2)
 """
 function det_ratio_2cols(dmat      :: DetMatrix,
-                         cols      :: Matrix{Complex128},
+                         cols      :: Matrix{ComplexF64},
                          c1        :: Int,
                          c2        :: Int)
 
     ### TODO: find a vectorize way to do this?
-    detratio_mat = zeros(Complex128, 2, 2)
+    detratio_mat = zeros(ComplexF64, 2, 2)
     detratio_mat[1, 1] = (dmat.inverse[[c1],:] * cols[:,1])[1]
     detratio_mat[1, 2] = (dmat.inverse[[c1],:] * cols[:,2])[1]
     detratio_mat[2, 1] = (dmat.inverse[[c2],:] * cols[:,1])[1]
@@ -61,9 +62,9 @@ determinant and inverse of the new DetMatrix given by the change of
 
 """
 function update_detmatrix_1col!(dmat      :: DetMatrix,
-                                col   :: Vector{Complex128},
+                                col   :: Vector{ComplexF64},
                                 c :: Int,
-                                detratio ::  Complex128)
+                                detratio ::  ComplexF64)
     # update matrix
     dmat.matrix[:,c] = col
 
@@ -89,10 +90,10 @@ by the change of `c1,c2` columns to the two columns in `cols` respectively.
 updates dmat.
 """
 function update_detmatrix_2cols!(dmat      :: DetMatrix,
-                                 cols      :: Matrix{Complex128},
+                                 cols      :: Matrix{ComplexF64},
                                  c1        :: Int,
                                  c2        :: Int,
-                                 detratio_mat  ::  Matrix{Complex128})
+                                 detratio_mat  ::  Matrix{ComplexF64})
     # update matrix
     dmat.matrix[:,c1] = cols[:, 1]
     dmat.matrix[:,c2] = cols[:, 2]
@@ -117,14 +118,14 @@ check the inverse and determinant in the detmat and if they are off,
 replace them with exact values. TODO: What should the tolerance be here?!
 """
 function check_and_update_detmatrix!(dmat::DetMatrix)
-    lu = lufact(dmat.matrix)
-    exact_det = det(lu)
-    exact_inv = inv(lu)
+    fact = lu(dmat.matrix)
+    exact_det = det(fact)
+    exact_inv = inv(fact)
     if !isapprox(dmat.determinant, exact_det, rtol=1.e-14)
         print("d")
     end
     # if !isapprox(dmat.matrix * dmat.inverse,
-    #             eye(Complex128, size(dmat.matrix)[1]), rtol=1.e-13)
+    #             eye(ComplexF64, size(dmat.matrix)[1]), rtol=1.e-13)
     if !isapprox(dmat.inverse, exact_inv, rtol=1.e-13)
         print("i")
     end

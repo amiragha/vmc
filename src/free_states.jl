@@ -15,7 +15,7 @@ function solve_free_full(model::Model, num_filled::Int)
     num_sites = length(sites)
     edges = model.lattice.edges
 
-    hamiltonian = zeros(Complex128, num_sites, num_sites)
+    hamiltonian = zeros(ComplexF64, num_sites, num_sites)
 
     # onesite chemical potentials
     for s=1:num_sites
@@ -34,7 +34,7 @@ function solve_free_full(model::Model, num_filled::Int)
         hamiltonian[j, i] += conj(t)
     end
 
-    return eigfact(Hermitian(hamiltonian), 1:num_filled)[:vectors]
+    return eigen(Hermitian(hamiltonian), 1:num_filled).vectors
 end
 
 """
@@ -72,12 +72,12 @@ function solve_free_periodic(model::Model,
     Lx = model.lattice.Lx
 
     energies = zeros(Float64, num_sites, Lx)
-    eigenstates = zeros(Complex128, num_sites, num_sites, Lx)
+    eigenstates = zeros(ComplexF64, num_sites, num_sites, Lx)
 
     for k_index=0:Lx-1
         periodicity == :PBC ? (k = k_index) : (k = k_index + 0.5)
 
-        k_hamiltonian = zeros(Complex128, num_sites, num_sites)
+        k_hamiltonian = zeros(ComplexF64, num_sites, num_sites)
 
         # 1site chemical potentials
         for s=1:num_sites
@@ -100,20 +100,20 @@ function solve_free_periodic(model::Model,
             k_hamiltonian[j, i] += conj(t)
         end
 
-        eigenresult = eigfact(Hermitian(k_hamiltonian))
-        energies[:,k_index+1] = eigenresult[:values]
-        eigenstates[:,:,k_index+1] = eigenresult[:vectors]
+        fact = eigen(Hermitian(k_hamiltonian))
+        energies[:,k_index+1] = fact.values
+        eigenstates[:,:,k_index+1] = fact.vectors
     end
 
-    states = zeros(Complex128, num_sites * Lx, num_filled)
+    states = zeros(ComplexF64, num_sites * Lx, num_filled)
 
     ### TODO: explain the sorting process in words
     # sort energies and fill states with lowest energy eigenvectors
+    perm = sortperm(reshape(energies, length(energies)))
     for index = 1:num_filled
-        sorted_index = sortperm(reshape(energies,
-                                        length(energies)))[index]
+        sorted_index = perm[index]
 
-        i, j = ind2sub(energies, sorted_index)
+        i, j = Tuple(CartesianIndices(energies)[sorted_index])
 
         #println("lowest energy indeces = ", i,", ", j)
         # TODO: more elegant code! should be able to kron full states

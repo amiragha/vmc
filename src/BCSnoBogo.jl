@@ -1,7 +1,7 @@
 # Gutzwiller projected slater determinant wavefunction
 # TODO: Does Gutzwiller need to carry the states?
 mutable struct BCSnoBogo
-    states :: Matrix{Complex128}
+    states :: Matrix{ComplexF64}
     configuration :: Vector{Int}
 
     olist :: Vector{Int}
@@ -22,7 +22,7 @@ sites(rows/2).
 
 returns a BCSnoBogo wavefunction
 """
-function random_nobogo_half(states::Matrix{Complex128})
+function random_nobogo_half(states::Matrix{ComplexF64})
     num_states = size(states)[2]
 
     # even lattice size and half-filling

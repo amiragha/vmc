@@ -1,7 +1,7 @@
 # Gutzwiller projected slater determinant wavefunction
 # TODO: Does Gutzwiller need to carry the states?
 mutable struct GutzwillerSlater
-    states :: Matrix{Complex128}
+    states :: Matrix{ComplexF64}
     configuration :: Vector{Int}
 
     uplist :: Vector{Int}
@@ -20,7 +20,7 @@ orbitals as columns.  The number of orbitals(columns) has to be
 exactly half of the number of sites(rows).
 
 """
-function random_gutzwiller_half(states::Matrix{Complex128})
+function random_gutzwiller_half(states::Matrix{ComplexF64})
     num_sites = size(states)[1]
     num_states = size(states)[2]
 
@@ -29,8 +29,8 @@ function random_gutzwiller_half(states::Matrix{Complex128})
 
     ### TODO: can these be simplified in one function?
     configuration = random_ones(num_sites, num_states)
-    uplist = find(x->x==1, configuration)
-    dnlist = find(x->x==0, configuration)
+    uplist = findall(x->x==1, configuration)
+    dnlist = findall(x->x==0, configuration)
 
     ### TODO: should be possible to slice them from states, directly!
     ## NOTE: while the states(orbitals) are originally given on cols,

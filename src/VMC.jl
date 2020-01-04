@@ -1,5 +1,7 @@
-module Tmp
+module VMC
 
+using LinearAlgebra
+using Dates
 using HDF5
 
 include("Lattice.jl")

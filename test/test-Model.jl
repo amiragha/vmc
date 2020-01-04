@@ -1,6 +1,6 @@
 # test chain
 function test_model_chain(Lx::Int, boundary::Symbol)
-    model = Tmp.chain(Lx, boundary, 0., complex(1.))
+    model = VMC.chain(Lx, boundary, 0., complex(1.))
 
     println(boundary)
     for i=1:length(model.lattice.sites)
@@ -13,7 +13,7 @@ end
 
 # test kagome
 function test_model_kagome(Lx::Int, boundary::Symbol)
-    model = Tmp.kagomestrip_LC(Lx, boundary, -2.5, complex(1.))
+    model = VMC.kagomestrip_LC(Lx, boundary, -2.5, complex(1.))
 
     println(boundary)
     for i=1:length(model.lattice.sites)

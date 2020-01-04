@@ -1,6 +1,7 @@
-import Tmp
+import VMC
 
-using Base.Test
+using Test
+using LinearAlgebra
 
 include("test-DetMatrix.jl")
 include("test-random.jl")
